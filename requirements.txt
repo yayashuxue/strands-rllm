@@ -1,4 +1,8 @@
-strands
-rllm
+strands-agents
 PyYAML
 numpy
+openai
+anthropic
+python-dotenv
+pylatexenc
+sympy

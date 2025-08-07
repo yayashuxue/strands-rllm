@@ -7,7 +7,7 @@ Evaluate the Strands-based agent on the GAIA benchmark.  Replace the task loader
 with the appropriate code to fetch GAIA tasks and compute metrics.
 """
 
-from rllm.engine.agent_workflow_engine import AgentWorkflowEngine
+from rllm.engine.agent_workflow_engine import AgentExecutionEngine
 from strands_agent.agent import build_agent
 
 
@@ -27,7 +27,7 @@ def load_gaia_tasks() -> List[Dict[str, Any]]:
 
 def main() -> None:
     agent = build_agent()
-    engine = AgentWorkflowEngine(agent=agent)
+    engine = AgentExecutionEngine(agent=agent)
     tasks = load_gaia_tasks()
     results = engine.execute_tasks(tasks)
     for idx, result in enumerate(results):

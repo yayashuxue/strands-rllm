@@ -4,11 +4,11 @@ from typing import List, Dict, Any
 eval/run_browsercomp.py
 
 Evaluate the Strands-based agent on the BrowserComp benchmark using rLLM's
-AgentWorkflowEngine.  This script is a template; replace the dummy task list
+AgentExecutionEngine.  This script is a template; replace the dummy task list
 with actual BrowserComp tasks and compute appropriate metrics.
 """
 
-from rllm.engine.agent_workflow_engine import AgentWorkflowEngine
+from rllm.engine.agent_workflow_engine import AgentExecutionEngine
 from strands_agent.agent import build_agent
 
 
@@ -26,7 +26,7 @@ def load_tasks() -> List[Dict[str, Any]]:
 
 def main() -> None:
     agent = build_agent()
-    engine = AgentWorkflowEngine(agent=agent)
+    engine = AgentExecutionEngine(agent=agent)
     tasks = load_tasks()
     results = engine.execute_tasks(tasks)
     for idx, result in enumerate(results):
