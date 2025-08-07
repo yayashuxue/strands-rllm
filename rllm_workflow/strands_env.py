@@ -1,14 +1,18 @@
 from rllm.environments.base.base_env import BaseEnv
 
 class StrandsEnv(BaseEnv):
-    def __init__(self, **kwargs):
-        self.current_prompt = None
+    def __init__(self, initial_prompt: str | None = None, max_steps: int = 3, **kwargs):
+        self.current_prompt = initial_prompt
+        self.initial_prompt = initial_prompt
         self.conversation_step = 0
-        self.max_steps = 3  # Allow up to 3 conversation turns
+        self.max_steps = max_steps
 
     @staticmethod
     def from_dict(data: dict):
-        return StrandsEnv(**data)
+        # Map common task fields to an initial prompt for the environment
+        initial_prompt = data.get("prompt") or data.get("question") or data.get("input")
+        max_steps = data.get("max_steps", 3)
+        return StrandsEnv(initial_prompt=initial_prompt, max_steps=max_steps)
 
     def step(self, action):
         """
@@ -30,14 +34,14 @@ class StrandsEnv(BaseEnv):
         
         # Create next observation based on the conversation flow
         if self.conversation_step == 1:
-            # First response to initial prompt
-            observation = "Thank you for your introduction. Can you tell me more about your capabilities?"
+            # First follow-up after initial prompt
+            observation = "Thank you. Can you expand with specific details or sources?"
         elif self.conversation_step == 2:
-            # Second response
-            observation = "That's interesting! What's your favorite programming language?"
+            # Second follow-up
+            observation = "What would be your final concise answer?"
         else:
             # Final response
-            observation = "Great conversation! Have a nice day."
+            observation = "End of conversation."
             done = True
         
         return {"observation": observation}, reward, done, {}
@@ -45,5 +49,7 @@ class StrandsEnv(BaseEnv):
     def reset(self):
         """Reset the environment for a new conversation."""
         self.conversation_step = 0
-        self.current_prompt = None
-        return {"observation": "Hello, who are you?"}, {}
+        self.current_prompt = self.initial_prompt
+        # Use the task-provided prompt if available; otherwise a default greeting
+        first_observation = self.current_prompt or "Hello, who are you?"
+        return {"observation": first_observation}, {}
