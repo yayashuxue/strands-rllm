@@ -32,7 +32,7 @@ strands-rllm/
 
 ## How to use this skeleton
 
-### **Option A: Using Git Submodules (Recommended)**
+### **Option A: Using Git Submodules (Recommended for MacOS user)**
 
 1. **Clone with submodules:**
 
@@ -119,7 +119,20 @@ strands-rllm/
 
 7. **Implement MEM1 memory.** If you wish to replace the baseline memory with a MEM1-style compact state, use the stub in `strands_agent/memory/mem1_stub.py` as a starting point. Implement the memory consolidation logic in the `recall` and `update` methods and modify `strands_agent/agent.py` to instantiate `Mem1Memory` instead of `Mem0Memory`.
 
-8. **Benchmark the agent.** The `eval/` directory contains placeholders for running benchmarks such as **BrowserComp**, **GAIA**, and **XBench**. When ready, load the benchmark tasks, feed them to rLLM's `AgentExecutionEngine`, and compute the evaluation metrics for your agent.
+8. **Benchmark the agent.** The `eval/` directory contains implementations for running benchmarks. Currently, **BrowserComp** is fully implemented with:
+
+   - Curated task dataset with 10 factual questions
+   - Specialized browser environment simulation
+   - Automated evaluation metrics (accuracy, response time, etc.)
+   - Results export to JSON format
+
+   Run the evaluation with:
+
+   ```bash
+   python run_browsercomp_eval.py
+   ```
+
+   Other benchmarks (GAIA, XBench) are available as templates for future implementation.
 
 ## Notes
 

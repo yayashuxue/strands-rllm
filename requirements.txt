@@ -6,3 +6,5 @@ anthropic
 python-dotenv
 pylatexenc
 sympy
+transformers
+dataclasses
