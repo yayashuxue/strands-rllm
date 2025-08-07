@@ -10,6 +10,11 @@ import re
 
 from dotenv import load_dotenv
 
+# Ensure project root is on sys.path so we can import rllm_workflow when running directly
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 try:
     from transformers import AutoTokenizer  # type: ignore
 except Exception:  # pragma: no cover
