@@ -6,3 +6,4 @@ anthropic
 python-dotenv
 pylatexenc
 sympy
+transformers>=4.42.0
