@@ -25,6 +25,26 @@ class StrandsAgentWrapper(BaseAgent):
         self._trajectory.steps.append(step)
 
     def update_from_model(self, response: str, **kwargs) -> Action:
+        # Instead of just using the response from rLLM's model,
+        # use the Strands agent to generate the actual response
+        if self._chat_history:
+            # Get the last user message to pass to Strands agent
+            last_user_message = None
+            for msg in reversed(self._chat_history):
+                if msg["role"] == "user":
+                    last_user_message = msg["content"]
+                    break
+            
+            if last_user_message:
+                try:
+                    # Call the actual Strands agent
+                    strands_response = self.agent(last_user_message)
+                    response = strands_response
+                except Exception as e:
+                    print(f"Error calling Strands agent: {e}")
+                    # Fall back to the original response
+                    pass
+        
         self._chat_history.append({"role": "assistant", "content": response})
         # --- FIX ---
         # Get the current step and store the model response in it.

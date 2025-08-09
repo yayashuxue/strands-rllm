@@ -124,9 +124,7 @@ def simple_normalize(text: str) -> str:
     if (txt.startswith("\"") and txt.endswith("\"")) or (txt.startswith("'") and txt.endswith("'")):
         txt = txt[1:-1]
     # Remove punctuation and excessive whitespace
-    txt = re.sub(r"[\s\p{P}]+", " ", txt, flags=re.UNICODE)
-    # Fallback for Python's lack of \p{P}: remove common punctuation
-    txt = re.sub(r"[\.,;:!?\-—'\"\(\)\[\]\{\}]", " ", txt)
+    txt = re.sub(r"[\s\.,;:!?\-—'\"\(\)\[\]\{\}]+", " ", txt)
     txt = re.sub(r"\s+", " ", txt).strip()
     return txt
 

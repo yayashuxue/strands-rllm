@@ -34,11 +34,11 @@ class StrandsEnv(BaseEnv):
         
         # Create next observation based on the conversation flow
         if self.conversation_step == 1:
-            # First follow-up after initial prompt
-            observation = "Thank you. Can you expand with specific details or sources?"
+            # First follow-up after initial prompt - encourage web browsing
+            observation = "Please use your web tools to find the specific, current information from relevant websites. What did you find?"
         elif self.conversation_step == 2:
             # Second follow-up
-            observation = "What would be your final concise answer?"
+            observation = "Can you provide the exact answer with specific details from the website?"
         else:
             # Final response
             observation = "End of conversation."
