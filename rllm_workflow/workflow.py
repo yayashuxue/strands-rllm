@@ -46,7 +46,7 @@ def main() -> None:
         "agent_args": {},
         "env_args": {},
         # Keep engine OpenAI-compatible; route via LiteLLM if base_url is set
-        "engine_name": "openai",
+        "engine_name": os.getenv("ENGINE_NAME", "openai"),
         "tokenizer": tokenizer,
         "sampling_params": {
             "model": model_name,
