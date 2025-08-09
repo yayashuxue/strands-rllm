@@ -5,4 +5,4 @@ openai
 anthropic
 python-dotenv
 pylatexenc
-sympy
+litellm
