@@ -7,6 +7,7 @@ import argparse
 import asyncio
 from pathlib import Path
 import re
+import types
 
 from dotenv import load_dotenv
 
@@ -46,7 +47,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=None, help="Optional number of tasks to evaluate")
     parser.add_argument("--max_steps", type=int, default=3, help="Max dialogue steps per task")
     parser.add_argument("--temperature", type=float, default=0.2, help="Sampling temperature")
-    parser.add_argument("--model", type=str, default="gpt-4o-mini", help="OpenAI model name to use via rLLM")
+    parser.add_argument("--model", type=str, default="gpt-4o-mini", help="OpenAI model name to use via rLLM (not used when Strands responds)")
     return parser.parse_args()
 
 
@@ -93,19 +94,14 @@ def load_tasks(path_str: str, limit: int | None = None) -> List[Dict[str, Any]]:
 
 
 def _strip_url(url: str) -> str:
-    # Basic URL canonicalization: lower-case scheme+host, strip trailing slash, remove http(s) prefix
     url = url.strip()
-    # Remove surrounding quotes
     if (url.startswith("\"") and url.endswith("\"")) or (url.startswith("'") and url.endswith("'")):
         url = url[1:-1]
     url = url.strip()
-    # Remove protocol
     url = re.sub(r"^https?://", "", url, flags=re.IGNORECASE)
-    # Lowercase host
     parts = url.split("/", 1)
     parts[0] = parts[0].lower()
     url = "/".join(parts)
-    # Remove trailing slash
     url = url[:-1] if url.endswith("/") else url
     return url
 
@@ -114,16 +110,11 @@ def simple_normalize(text: str) -> str:
     if text is None:
         return ""
     txt = str(text).strip()
-    # If appears like a URL, canonicalize
     if re.match(r"^https?://", txt, flags=re.IGNORECASE) or "." in txt:
-        # Heuristic: if it looks like a domain path, try URL normalization
         return _strip_url(txt)
-    # Else general normalization
     txt = txt.lower()
-    # Remove surrounding quotes
     if (txt.startswith("\"") and txt.endswith("\"")) or (txt.startswith("'") and txt.endswith("'")):
         txt = txt[1:-1]
-    # Remove punctuation and excessive whitespace
     txt = re.sub(r"[\s\.,;:!?\-—'\"\(\)\[\]\{\}]+", " ", txt)
     txt = re.sub(r"\s+", " ", txt).strip()
     return txt
@@ -175,6 +166,12 @@ async def run_eval(data_path: str, limit: int | None, max_steps: int, model: str
 
     engine = AsyncAgentExecutionEngine(**engine_config)
 
+    # Default: skip rLLM model completions, rely on Strands agent responses only
+    async def _noop(self, prompt, application_id, **kwargs):
+        return ""
+    engine.get_model_response = types.MethodType(_noop, engine)  # type: ignore
+    engine._get_openai_async = types.MethodType(_noop, engine)  # type: ignore
+
     tasks = load_tasks(data_path, limit=limit)
     exec_tasks = [{"id": t["id"], "question": t["question"], "max_steps": max_steps} for t in tasks]
 
@@ -201,7 +198,6 @@ async def run_eval(data_path: str, limit: int | None, max_steps: int, model: str
     print("BrowseComp results:")
     print(f"Accuracy: {acc:.4f} ({num_correct}/{num_total})")
 
-    # Print a few examples for inspection
     for t, p in list(zip(tasks, preds))[:5]:
         print(f"- id={t['id']}\n  Q: {t['question'][:200]}\n  Pred: {p[:200]}\n  Gold: {t['gold']}")
 

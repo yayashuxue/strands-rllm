@@ -11,11 +11,11 @@ strands-rllm/
 │   ├── agent.py               # Builds a Strands agent using mem0 memory (baseline)
 │   └── memory/
 │       ├── __init__.py
-│       ├── mem0_adapter.py    # Optional helper to wrap the default mem0 memory
+│       ├── (mem0 provided by Strands SDK)    # Baseline uses Strands mem0 tool if configured
 │       └── mem1_stub.py       # Stub for integrating a MEM1-like memory
 ├── rllm_workflow/             # Scripts for running the agent via rLLM workflows
 │   ├── __init__.py
-│   ├── workflow.py            # Example evaluation loop using AgentExecutionEngine
+│   ├── workflow.py            # Example evaluation loop using AgentExecutionEngine (optional)
 │   ├── strands_agent_wrapper.py  # Wrapper to integrate Strands agent with rLLM
 │   └── strands_env.py         # Environment for agent interaction
 ├── local_tokenizer/           # Local tokenizer files for rLLM
@@ -124,7 +124,7 @@ strands-rllm/
    ```bash
    # Run demo tasks (3 simple web browsing questions)
    python eval/run_browsercomp.py --data data/demo_tasks.jsonl --limit 3 --max_steps 5
-   
+
    # Download and run full BrowserComp dataset (requires Kaggle API)
    python download_browsecomp.py
    python eval/run_browsercomp.py --data data/browsecomp_official.jsonl --limit 100 --max_steps 3
@@ -138,16 +138,18 @@ strands-rllm/
    python prepare_real_browsecomp_data.py --output data/custom_tasks.jsonl --limit 10
    ```
 
-10. **Benchmark other tasks.** The `eval/` directory contains placeholders for running benchmarks such as **GAIA** and **XBench**. When ready, load the benchmark tasks, feed them to rLLM's `AgentExecutionEngine`, and compute the evaluation metrics for your agent.
+10. **Benchmark other tasks.** You can extend the `eval/` directory with additional runners as needed; this repo ships only the BrowseComp-style runner by default.
 
 ## Browser Agent Evaluation
 
 The repository includes a fully working browser-enabled agent that can:
+
 - Navigate to websites using LocalChromiumBrowser
 - Extract information from web pages
 - Answer questions based on real-time web content
 
 ### Quick Demo
+
 ```bash
 # Activate environment
 conda activate rllm
@@ -157,11 +159,13 @@ python eval/run_browsercomp.py --data data/demo_tasks.jsonl --limit 3 --max_step
 ```
 
 ### Configuration
+
 - **Model**: Uses OpenAI GPT-4o-mini (set `OPENAI_API_KEY` environment variable)
 - **Browser**: LocalChromiumBrowser (headless Chromium via Playwright)
 - **Evaluation**: Normalized exact match scoring with URL canonicalization
 
 ### Data Files
+
 - `data/demo_tasks.jsonl` - 3 sample browsing tasks for quick testing
 - `data/browsecomp_official.jsonl` - Full BrowserComp dataset (download via script)
 - Generated via `prepare_real_browsecomp_data.py` and `download_browsecomp.py`
