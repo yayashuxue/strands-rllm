@@ -1,3 +1,7 @@
 [submodule "rllm"]
 	path = rllm
 	url = https://github.com/rllm-org/rllm.git
+[submodule "_external/rllm-zero"]
+	path = _external/rllm-zero
+	url = https://github.com/jeffreysijuntan/rllm-zero.git
+	branch = v0.2

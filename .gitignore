@@ -115,4 +115,3 @@ Miniconda3-latest-MacOSX-arm64.sh
 # rllm/ is handled separately
 .cursor/rules/conda.mdc
 .cursor/rules/readme.mdc
-_external/
