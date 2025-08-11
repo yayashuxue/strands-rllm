@@ -32,8 +32,8 @@ flowchart LR
     TP[ThreadPool]
   end
 
-  A[Agent (BaseAgent)] <--> EE
-  E[Env (BaseEnv)] <--> EE
+  A[Agent-BaseAgent] <--> EE
+  E[Env-BaseEnv] <--> EE
 
   EE -- get_model_response --> M1[OpenAI Async Client]
   EE -- get_model_response --> M2[veRL Router]
@@ -64,8 +64,8 @@ flowchart LR
   end
 
   subgraph WF[Workflow]
-    AG[Agent(s)]
-    EP[Episode (1..N trajectories)]
+    AG[Agents]
+    EP[Episode-1..N trajectories]
   end
 
   WFE --> Q --> WF
@@ -90,13 +90,13 @@ flowchart LR
 flowchart LR
   RE[RolloutEngine]
   RE <-- used by --> WFE[AgentWorkflowEngine]
-  RE <-- used by --> RLM[RLLMModel (Strands integration)]
+  RE <-- used by --> RLM[RLLMModel -Strands integration]
   RLM --> SA[Strands Agent]
 
-  AE[AgentExecutionEngine] -- (verl path) --> RTR[veRL Router]
+  AE[AgentExecutionEngine] -- verl path --> RTR[veRL Router]
   RTR --> RE
 
-  AE -- (openai path) --> OAI[AsyncOpenAI]
+  AE -- openai path --> OAI[AsyncOpenAI]
 ```
 
 - 中文: 工作流路径直接依赖 `RolloutEngine`；Strands 集成通过 `RLLMModel` 复用 `RolloutEngine`；ExecutionEngine 在 veRL 模式下经 Router 使用 `RolloutEngine`，在 OpenAI 模式下直连 API。
@@ -144,13 +144,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  subgraph Z[rllm-zero (this branch)]
+  subgraph Z[rllm-zero]
     subgraph ZW[workflows/]
       ZWF[Workflow]
       ZWFE[AgentWorkflowEngine]
     end
-    ZINT[integrations/strands (RLLMModel, StrandsAgent)]
-    ZENG[engine/ (RolloutEngine, Router)]
+    ZINT[integrations/strands-RLLMModel, StrandsAgent]
+    ZENG[engine/RolloutEngine, Router]
     ZAG[agents/]
     ZENV[environments/]
     ZTR[trainer/]
@@ -167,8 +167,8 @@ flowchart LR
     REG[engine/AgentExecutionEngine]
     RAG[agents/]
     RENV[environments/]
-    RENG[engine/(Router, RolloutEngine)]
-    RTR[trainer/ (verl)]
+    RENG[engine/Router, RolloutEngine]
+    RTR[trainer/verl]
 
     REG --> RAG
     REG --> RENV
