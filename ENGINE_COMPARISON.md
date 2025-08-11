@@ -35,15 +35,22 @@ flowchart LR
   A[Agent-BaseAgent] <--> EE
   E[Env-BaseEnv] <--> EE
 
-  EE -- get_model_response --> M1[OpenAI Async Client]
-  EE -- get_model_response --> M2[veRL Router]
+  subgraph ModelChoice [Model Selection]
+    direction LR
+    Choice{Engine Config?}
+    M1[OpenAI Async Client]
+    M2[veRL Router]
+  end
+  
+  EE -- get_model_response --> Choice
+  Choice -- "openai" --> M1
+  Choice -- "verl" --> M2
+
   M2 --> RE[RolloutEngine]
 
   A --> T[Trajectory]
   E -. step/reset .- TP
   EE --> CP
-
-  note over M1,M2: Engine switches by configuration ("openai" or "verl")
 ```
 
 - 中文要点:
