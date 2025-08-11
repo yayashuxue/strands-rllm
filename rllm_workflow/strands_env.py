@@ -16,40 +16,28 @@ class StrandsEnv(BaseEnv):
 
     def step(self, action):
         """
-        Process the agent's action and return the next observation.
-        
-        Args:
-            action: The agent's response/action
-            
+        Process the agent's action and advance the dialogue turn.
+
         Returns:
             tuple: (observation, reward, done, info)
         """
         self.conversation_step += 1
-        
-        # Simple reward logic: give positive reward for any response
-        reward = 1.0 if action and len(str(action).strip()) > 0 else 0.0
-        
-        # Check if conversation should end
+
+        # Keep reward neutral; scoring is done externally in the runner
+        reward = 0.0
+
+        # Done when reaching max_steps
         done = self.conversation_step >= self.max_steps
-        
-        # Create next observation based on the conversation flow
-        if self.conversation_step == 1:
-            # First follow-up after initial prompt - encourage web browsing
-            observation = "Please use your web tools to find the specific, current information from relevant websites. What did you find?"
-        elif self.conversation_step == 2:
-            # Second follow-up
-            observation = "Can you provide the exact answer with specific details from the website?"
-        else:
-            # Final response
-            observation = "End of conversation."
-            done = True
-        
+
+        # Do not inject any additional guidance; let the agent drive the flow
+        observation = ""
+
         return {"observation": observation}, reward, done, {}
 
     def reset(self):
         """Reset the environment for a new conversation."""
         self.conversation_step = 0
         self.current_prompt = self.initial_prompt
-        # Use the task-provided prompt if available; otherwise a default greeting
-        first_observation = self.current_prompt or "Hello, who are you?"
+        # Provide the task prompt as the initial observation
+        first_observation = self.current_prompt or ""
         return {"observation": first_observation}, {}
