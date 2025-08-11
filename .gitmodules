@@ -1,3 +1,0 @@
-[submodule "rllm"]
-	path = rllm
-	url = https://github.com/rllm-org/rllm.git
